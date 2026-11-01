@@ -1,0 +1,40 @@
+# llm_nav_bot のパラメータ (launch 引数 params_file で差し替え可能)
+behavior_controller:
+  ros__parameters:
+    control_rate_hz: 10.0      # シミュレーション時間基準
+    status_rate_hz: 2.0
+    max_linear: 0.18           # [m/s] Burger の最大は 0.22
+    max_angular: 0.8           # [rad/s]
+    obstacle_distance: 0.45    # 前進系の行動が「塞がっている」と判断する距離 [m]
+    blocked_timeout: 4.0       # 塞がったままこの時間が経つと plan_blocked → 自動再計画 [s]
+
+safety_layer:
+  ros__parameters:
+    output_topic: cmd_vel
+    cmd_vel_type: auto         # auto / twist / twist_stamped (auto はブリッジの購読型から判別)
+    frame_id: base_link
+    rate_hz: 20.0
+    cmd_timeout: 0.5           # 行動層の指令がこの時間途絶えたら停止 [s]
+    stop_distance: 0.22        # 前方がこれ未満なら前進を禁止 [m]
+    slow_distance: 0.45        # これ未満では減速 [m]
+    back_stop_distance: 0.20
+    scan_timeout: 1.0          # LiDAR がこの時間途絶えたら全停止 [s]
+    max_linear: 0.20
+    max_angular: 1.2
+
+llm_commander:
+  ros__parameters:
+    backend: claude            # claude / rule
+    model: claude-opus-5-5
+    effort: low                # low / medium / high (low で応答が速い)
+    request_timeout: 30.0
+    use_refusal_fallback: true
+    history_size: 5            # LLM に渡す直近のやりとりの件数
+    auto_replan: true
+    max_replans: 2
+    max_linear: 0.18
+
+data_logger:
+  ros__parameters:
+    log_dir: ~/llm_nav_logs
+    rate_hz: 5.0
